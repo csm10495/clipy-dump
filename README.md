@@ -27,5 +27,10 @@ Run it like:
 ./clipy-dump <PATH_TO_CLIPY_REALM_FILE>
 ```
 
+# Then What?
+
+After building/installing, you can use the clipboard-history script as a quick way to search you clipboard history via regex in the terminal.
+
+
 # License:
 MIT License - Charles Machalow
