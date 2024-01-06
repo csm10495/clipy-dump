@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+# Use me along with clipy-dump to do a clipboard search with a given regex.
+
+from datetime import datetime
+
+import argparse
+import re
+import subprocess
+import sys
+import json
+
+parser = argparse.ArgumentParser()
+parser.add_argument("regex", nargs=1, help="Regex to search for in clipboard history")
+parser.add_argument("--show-timestamps", "-t", action="store_true", help="Show timestamps for each entry")
+args = parser.parse_args()
+
+result = subprocess.run(['clipy-dump'], capture_output=True)
+
+if result.returncode != 0:
+    print("Error running clipy-dump", file=sys.stderr)
+    sys.exit(2)
+
+json_data = json.loads(result.stdout)
+
+"""
+Each entry looks something like this. The title is the string.
+    {
+        "dataHash": "5059612518595509079",
+        "dataPath": "/Users/cmachalo/Library/Application Support/Clipy/BBD3D5CF-A66F-45F1-A152-11EFE9D269C8.data",
+        "isColorCode": "0",
+        "primaryType": "NSStringPboardType",
+        "thumbnailPath": "",
+        "title": "urls_for_application",
+        "updateTime": "1695414669"
+    },
+"""
+
+for jentry in reversed(json_data):
+    text = jentry["title"]
+    if re.findall(args.regex[0], text):
+        if args.show_timestamps:
+            print(datetime.fromtimestamp(int(jentry["updateTime"])))
+        print(text)
+        print("-" * 25)
+
+
